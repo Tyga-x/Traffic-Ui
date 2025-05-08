@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3x-ui Traffic Dashboard</title>
+    <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --card-bg: #16213e;
+            --accent-color: #7b68ee;
+            --text-color: #ffffff;
+            --secondary-text: #a0a0a0;
+            --success-color: #4CAF50;
+            --border-radius: 10px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-title {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+        
+        .search-container {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .input-group {
+            flex: 1;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #2a2a5a;
+            background-color: #0f1631;
+            color: var(--text-color);
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .primary-btn {
+            background-color: var(--accent-color);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            background-color: #6a5acd;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+            font-size: 1.2rem;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background-color: #0f1631;
+            border-radius: 5px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 5px;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .data-label {
+            color: var(--secondary-text);
+        }
+        
+        .data-value {
+            font-weight: bold;
+        }
+        
+        .traffic-boxes {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+        }
+        
+        .traffic-box {
+            background-color: #0f1631;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            text-align: center;
+            flex: 1;
+            margin: 0 5px;
+        }
+        
+        .traffic-box .value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .traffic-box .label {
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+        }
+        
+        .circle-progress {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            stroke: var(--accent-color);
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.3s;
+            fill: transparent;
+        }
+        
+        .progress-ring-bg {
+            stroke: #0f1631;
+            fill: transparent;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+        
+        .server-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #2a2a5a;
+        }
+        
+        .server-info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-healthy {
+            background-color: rgba(76, 175, 80, 0.2);
+            color: #4CAF50;
+        }
+        
+        .speed-test-results {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #0f1631;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--accent-color);
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="page-title">Check your 3x-ui traffic usage</h1>
+        
+        <div class="search-container">
+            <div class="search-form">
+                <div class="input-group">
+                    <input type="text" id="uuidInput" placeholder="UUID" value="00000000-0000-0000-0000-000000000001">
+                </div>
+                <div class="input-group">
+                    <input type="text" id="usernameInput" placeholder="Username">
+                </div>
+                <button id="checkUsageBtn" class="btn primary-btn">Check Usage</button>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M21 8V20.9932C21 21.5501 20.5552 22 20.0066 22H3.9934C3.44495 22 3 21.556 3 21.0082V2.9918C3 2.45531 3.4487 2 4.00221 2H14.9968L21 8Z" stroke="#7b68ee" stroke-width="2"/>
+                        <path d="M21 8H17.4C16.0745 8 15 6.88071 15 5.5V2" stroke="#7b68ee" stroke-width="2"/>
+                    </svg>
+                    Usage Statistics
+                </div>
+                <div class="data-row">
+                    <span class="data-label">Total Data Usage</span>
+                    <span class="data-value">80%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 80%"></div>
+                </div>
+                <div class="data-row">
+                    <span class="data-label">8.01 GB used</span>
+                    <span class="data-label">Limit: 10 GB</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#7b68ee" stroke-width="2"/>
+                        <path d="M12 6V12L16 14" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Usage Progress
+                </div>
+                <div class="circle-progress">
+                    <svg class="progress-ring" width="150" height="150">
+                        <circle class="progress-ring-bg" cx="75" cy="75" r="65" stroke-width="10"></circle>
+                        <circle class="progress-ring-circle" cx="75" cy="75" r="65" stroke-width="10" stroke-dasharray="408.4" stroke-dashoffset="81.68"></circle>
+                    </svg>
+                    <div class="progress-text">80%</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 5H21" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 12H21" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M3 19H21" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Traffic Details
+                </div>
+                <div class="traffic-boxes">
+                    <div class="traffic-box">
+                        <div class="value">2.34 GB</div>
+                        <div class="label">Upload</div>
+                    </div>
+                    <div class="traffic-box">
+                        <div class="value">5.67 GB</div>
+                        <div class="label">Download</div>
+                    </div>
+                    <div class="traffic-box">
+                        <div class="value">8.01 GB</div>
+                        <div class="label">Total</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 12C14.2091 12 16 10.2091 16 8C16 5.79086 14.2091 4 12 4C9.79086 4 8 5.79086 8 8C8 10.2091 9.79086 12 12 12Z" stroke="#7b68ee" stroke-width="2"/>
+                        <path d="M20 21C20 18.2386 16.4183 16 12 16C7.58172 16 4 18.2386 4 21" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    Account Information
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Account Status</span>
+                    <span class="data-value" style="color: #4CAF50;">Enabled</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Data Limit</span>
+                    <span class="data-value">10 GB</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Time Remaining</span>
+                    <span class="data-value">14 days</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Last Updated</span>
+                    <span class="data-value">6:33:38 PM</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 9H6V20H2V9Z" stroke="#7b68ee" stroke-width="2"/>
+                        <path d="M10 4H14V20H10V4Z" stroke="#7b68ee" stroke-width="2"/>
+                        <path d="M18 13H22V20H18V13Z" stroke="#7b68ee" stroke-width="2"/>
+                    </svg>
+                    Server Health
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">CPU Load</span>
+                    <span class="data-value">0.08%</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">RAM Usage</span>
+                    <span class="data-value">367MB out of 980MB</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Disk Space</span>
+                    <span class="data-value">10.77% used</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#7b68ee" stroke-width="2"/>
+                        <path d="M12 16V16.01" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                        <path d="M12 13C11.9816 12.6037 12.1343 12.2159 12.4142 11.9142C12.6941 11.6125 13.0816 11.4373 13.4783 11.4321C13.8341 11.4147 14.1863 11.5172 14.4699 11.7226C14.7535 11.928 14.9512 12.2236 15.028 12.5569C15.1048 12.8902 15.0561 13.2394 14.8895 13.5399C14.7229 13.8405 14.4487 14.0737 14.12 14.2L12 16" stroke="#7b68ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Server Information
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Uptime</span>
+                    <span class="data-value">14 days, 5 hours</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Location</span>
+                    <span class="data-value">SG</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">Server Status</span>
+                    <span class="status-badge status-healthy">Healthy</span>
+                </div>
+                <div class="server-info-row">
+                    <span class="data-label">IP Address</span>
+                    <button class="btn primary-btn" style="padding: 3px 10px; font-size: 0.8rem;">Copy</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-title">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#7b68ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Speed Test
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                <div style="text-align: center; flex: 1;">
+                    <div class="data-label">Download</div>
+                    <div id="downloadSpeed" class="data-value">-- Mbps</div>
+                </div>
+                <div style="text-align: center; flex: 1;">
+                    <div class="data-label">Upload</div>
+                    <div id="uploadSpeed" class="data-value">-- Mbps</div>
+                </div>
+                <div style="text-align: center; flex: 1;">
+                    <div class="data-label">Ping</div>
+                    <div id="ping" class="data-value">-- ms</div>
+                </div>
+            </div>
+            <button id="runSpeedTest" class="btn primary-btn" style="width: 100%;">Run Speed Test</button>
+            
+            <div id="loader" class="loader">
+                <div class="spinner"></div>
+                <p>Running speed test... This may take a minute.</p>
+            </div>
+            <div id="speedTestResults" class="speed-test-results">
+                <div class="result-item">
+                    <span>Download Speed:</span>
+                    <span id="downloadSpeedResult">0 Mbps</span>
+                </div>
+                <div class="result-item">
+                    <span>Upload Speed:</span>
+                    <span id="uploadSpeedResult">0 Mbps</span>
+                </div>
+                <div class="result-item">
+                    <span>Ping:</span>
+                    <span id="pingResult">0 ms</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 20px; text-align: center;">
+            <div class="card-title" style="justify-content: center;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#7b68ee" stroke-width="2"/>
+                    <path d="M12 8V16" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                    <path d="M8 12H16" stroke="#7b68ee" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                Subscription
+            </div>
+            <button id="renewButton" class="btn primary-btn" style="margin-top: 10px;">Renew Subscription</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Speed Test functionality
+            const runSpeedTestBtn = document.getElementById('runSpeedTest');
+            const loader = document.getElementById('loader');
+            const speedTestResults = document.getElementById('speedTestResults');
+            const downloadSpeedEl = document.getElementById('downloadSpeed');
+            const uploadSpeedEl = document.getElementById('uploadSpeed');
+            const pingEl = document.getElementById('ping');
+            const downloadSpeedResultEl = document.getElementById('downloadSpeedResult');
+            const uploadSpeedResultEl = document.getElementById('uploadSpeedResult');
+            const pingResultEl = document.getElementById('pingResult');
+            
+            runSpeedTestBtn.addEventListener('click', function() {
+                // Show loader
+                loader.style.display = 'block';
+                speedTestResults.style.display = 'none';
+                
+                // Call the API
+                fetch('/api/speed-test')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Hide loader
+                        loader.style.display = 'none';
+                        
+                        // Show results
+                        speedTestResults.style.display = 'block';
+                        downloadSpeedEl.textContent = data.download.toFixed(2) + ' Mbps';
+                        uploadSpeedEl.textContent = data.upload.toFixed(2) + ' Mbps';
+                        pingEl.textContent = data.ping.toFixed(1) + ' ms';
+                        
+                        downloadSpeedResultEl.textContent = data.download.toFixed(2) + ' Mbps';
+                        uploadSpeedResultEl.textContent = data.upload.toFixed(2) + ' Mbps';
+                        pingResultEl.textContent = data.ping.toFixed(1) + ' ms';
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        loader.style.display = 'none';
+                        alert('Error running speed test. Please try again.');
+                    });
+            });
+            
+            // Renew button
+            const renewBtn = document.getElementById('renewButton');
+            renewBtn.addEventListener('click', function() {
+                window.open('https://t.me/admin_username', '_blank');
+            });
+            
+            // Check usage button
+            const checkUsageBtn = document.getElementById('checkUsageBtn');
+            checkUsageBtn.addEventListener('click', function() {
+                const uuid = document.getElementById('uuidInput').value;
+                const username = document.getElementById('usernameInput').value;
+                
+                // Here you would call your API to get usage data
+                console.log(`Checking usage for UUID: ${uuid}, Username: ${username}`);
+                
+                // In a real implementation, you would fetch data and update the UI
+                // fetch(`/api/usage?uuid=${uuid}&username=${username}`)
+                //    .then(response => response.json())
+                //    .then(data => updateDashboard(data))
+                //    .catch(error => console.error('Error:', error));
+            });
+            
+            // Set up the circular progress
+            const circle = document.querySelector('.progress-ring-circle');
+            const radius = circle.r.baseVal.value;
+            const circumference = radius * 2 * Math.PI;
+            
+            circle.style.strokeDasharray = `${circumference} ${circumference}`;
+            circle.style.strokeDashoffset = circumference;
+            
+            function setProgress(percent) {
+                const offset = circumference - (percent / 100 * circumference);
+                circle.style.strokeDashoffset = offset;
+            }
+            
+            // Set initial progress
+            setProgress(80);
+        });
+    </script>
+</body>
+</html>

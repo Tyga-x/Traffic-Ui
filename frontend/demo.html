@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3x-ui Traffic Dashboard Demo</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles-additional.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .results-container {
+            display: block !important;
+        }
+        .search-container {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="premium-badge">
+                <i class="fas fa-crown"></i> PREMIUM SERVER
+            </div>
+            <h1>Trial Server</h1>
+            <p class="subtitle">Check your 3x-ui traffic usage</p>
+        </header>
+
+        <div class="search-container">
+            <!-- Search form hidden in demo -->
+        </div>
+
+        <div class="results-container" id="results-container">
+            <div class="results-content" id="results-content">
+                <div class="results-header">
+                    <div class="user-identifier" id="user-identifier">UUID: 00000000-0000-0000-0000-000000000001</div>
+                    <button id="back-btn" class="back-button">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                
+                <!-- First row: Usage Statistics, Usage Progress, Traffic Details -->                
+                <div class="dashboard-row three-cards">
+                    <div class="dashboard-card usage-stats-card">
+                        <div class="card-header">
+                            <i class="fas fa-chart-pie"></i> Usage Statistics
+                        </div>
+                        <div class="usage-stats-content" style="padding: 25px; text-align: center;">
+                            <div style="font-size: 24px; color: #7460ee; font-weight: bold; margin-bottom: 15px;">13.97 GB / 10.00 GB</div>
+                            <div class="progress-bar-container" style="margin-bottom: 15px; height: 8px; background: rgba(116, 96, 238, 0.2); border-radius: 4px;">
+                                <div class="progress-bar total-bar" style="width: 100%; height: 8px; background: #7460ee; border-radius: 4px;"></div>
+                            </div>
+                            <div style="font-size: 14px; color: #a8a8b1;">Total Data Usage</div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card usage-progress-card">
+                        <div class="card-header">
+                            <i class="fas fa-tasks"></i> Usage Progress
+                        </div>
+                        <div class="usage-progress-content" style="display: flex; align-items: center; justify-content: center; padding: 25px;">
+                            <div style="position: relative; width: 150px; height: 150px;">
+                                <canvas id="progressChart"></canvas>
+                                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                                    <div style="font-size: 28px; color: #7460ee; font-weight: bold;">100%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card traffic-details-card">
+                        <div class="card-header">
+                            <i class="fas fa-exchange-alt"></i> Traffic Details
+                        </div>
+                        <div class="traffic-details-content" style="padding: 25px;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 12px; color: #a8a8b1; margin-bottom: 10px;">Upload</div>
+                                    <div style="display: inline-block; background: rgba(255, 80, 80, 0.15); padding: 10px; border-radius: 8px; width: 80px; text-align: center;">
+                                        <i class="fas fa-arrow-up" style="color: #ff5050; margin-right: 5px;"></i>
+                                        <div style="font-size: 16px; color: #ff5050; font-weight: bold;">4.66</div>
+                                        <div style="font-size: 12px; color: #ff5050;">GB</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 12px; color: #a8a8b1; margin-bottom: 10px;">Download</div>
+                                    <div style="display: inline-block; background: rgba(80, 200, 120, 0.15); padding: 10px; border-radius: 8px; width: 80px; text-align: center;">
+                                        <i class="fas fa-arrow-down" style="color: #50c878; margin-right: 5px;"></i>
+                                        <div style="font-size: 16px; color: #50c878; font-weight: bold;">9.31</div>
+                                        <div style="font-size: 12px; color: #50c878;">GB</div>
+                                    </div>
+                                </div>
+                                
+                                <div style="text-align: center; flex: 1;">
+                                    <div style="font-size: 12px; color: #a8a8b1; margin-bottom: 10px;">Total</div>
+                                    <div style="display: inline-block; background: rgba(116, 96, 238, 0.15); padding: 10px; border-radius: 8px; width: 80px; text-align: center;">
+                                        <i class="fas fa-chart-bar" style="color: #7460ee; margin-right: 5px;"></i>
+                                        <div style="font-size: 16px; color: #7460ee; font-weight: bold;">13.97</div>
+                                        <div style="font-size: 12px; color: #7460ee;">GB</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Second row: Account Information, Server Health, Server Information -->
+                <div class="dashboard-row three-cards">
+                    <div class="dashboard-card account-info-card">
+                        <div class="card-header">
+                            <i class="fas fa-user"></i> Account Information
+                        </div>
+                        <div class="account-info-content" style="padding: 15px;">
+                            <div style="display: flex; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #4caf50; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Account Status</div>
+                                    </div>
+                                    <div style="font-size: 14px; color: #4caf50; margin-left: 16px;">Enabled</div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #4caf50; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Time Remaining</div>
+                                    </div>
+                                    <div style="font-size: 14px; color: #4caf50; margin-left: 16px;">14 days</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #7460ee; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Data Limit</div>
+                                    </div>
+                                    <div style="font-size: 14px; margin-left: 16px;">10.00 GB</div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #7460ee; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Last Updated</div>
+                                    </div>
+                                    <div style="font-size: 14px; margin-left: 16px;">N/A</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card server-health-card">
+                        <div class="card-header">
+                            <i class="fas fa-server"></i> Server Health
+                        </div>
+                        <div class="server-health-content" style="padding: 15px;">
+                            <div style="margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-size: 12px; color: #a8a8b1;">CPU Load</span>
+                                    <span style="font-size: 12px; color: #a8a8b1;">0.08%</span>
+                                </div>
+                                <div style="height: 8px; background: rgba(116, 96, 238, 0.2); border-radius: 4px;">
+                                    <div style="width: 0.08%; height: 8px; background: #7460ee; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 10px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-size: 12px; color: #a8a8b1;">RAM Usage</span>
+                                    <span style="font-size: 12px; color: #a8a8b1;">367MB out of 980MB</span>
+                                </div>
+                                <div style="height: 8px; background: rgba(116, 96, 238, 0.2); border-radius: 4px;">
+                                    <div style="width: 37%; height: 8px; background: #7460ee; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                                    <span style="font-size: 12px; color: #a8a8b1;">Disk Space</span>
+                                    <span style="font-size: 12px; color: #a8a8b1;">10.77% used</span>
+                                </div>
+                                <div style="height: 8px; background: rgba(116, 96, 238, 0.2); border-radius: 4px;">
+                                    <div style="width: 10.77%; height: 8px; background: #7460ee; border-radius: 4px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-card server-info-card">
+                        <div class="card-header">
+                            <i class="fas fa-info-circle"></i> Server Information
+                        </div>
+                        <div class="server-info-content" style="padding: 15px;">
+                            <div style="display: flex; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #7460ee; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Uptime</div>
+                                    </div>
+                                    <div style="font-size: 14px; margin-left: 16px;">14 days, 5 hours</div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #7460ee; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Location</div>
+                                    </div>
+                                    <div style="font-size: 14px; margin-left: 16px;">SG</div>
+                                </div>
+                            </div>
+                            
+                            <div style="display: flex; margin-bottom: 10px;">
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #4caf50; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">Server Status</div>
+                                    </div>
+                                    <div style="font-size: 14px; color: #4caf50; margin-left: 16px;">Healthy</div>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="display: flex; align-items: center;">
+                                        <div style="width: 8px; height: 8px; background-color: #7460ee; border-radius: 50%; margin-right: 8px;"></div>
+                                        <div style="font-size: 12px; color: #a8a8b1;">IP Address</div>
+                                    </div>
+                                    <div style="font-size: 14px; margin-left: 16px;">
+                                        <button class="copy-btn" id="copy-ip-btn" style="background: #7460ee; color: white; border: none; border-radius: 4px; padding: 2px 8px; font-size: 12px; cursor: pointer;">Copy</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- No third row in the new design -->
+            </div>
+        </div>
+
+        <footer>
+            <p>&copy; <span id="current-year">2025</span> 3x-ui Traffic Dashboard</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Create a circular progress chart for the demo
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('progressChart').getContext('2d');
+            
+            const progressChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Used', 'Available'],
+                    datasets: [{
+                        data: [9.3, 90.7],
+                        backgroundColor: [
+                            'rgba(116, 96, 238, 0.8)',
+                            'rgba(30, 30, 60, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(116, 96, 238, 1)',
+                            'rgba(30, 30, 60, 0)'
+                        ],
+                        borderWidth: 0,
+                        borderRadius: 5,
+                        spacing: 0
+                    }]
+                },
+                options: {
+                    cutout: '80%',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rotation: -90,
+                    circumference: 180,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            enabled: false
+                        }
+                    }
+                }
+            });
+            
+            // Initialize the Renew button
+            const renewButton = document.getElementById('renew-btn');
+            if (renewButton) {
+                renewButton.addEventListener('click', () => {
+                    window.open('https://t.me/admin', '_blank');
+                });
+            }
+            
+            // Initialize the Copy IP button
+            const copyIpBtn = document.getElementById('copy-ip-btn');
+            if (copyIpBtn) {
+                copyIpBtn.addEventListener('click', () => {
+                    const serverIp = '127.0.0.1';
+                    navigator.clipboard.writeText(serverIp)
+                        .then(() => {
+                            copyIpBtn.textContent = 'Copied!';
+                            setTimeout(() => {
+                                copyIpBtn.textContent = 'Copy';
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy IP: ', err);
+                        });
+                });
+            }
+            
+            // Initialize the Ping Test button
+            const startPingBtn = document.getElementById('start-ping-btn');
+            if (startPingBtn) {
+                startPingBtn.addEventListener('click', () => {
+                    const pingMin = document.getElementById('ping-min');
+                    const pingAvg = document.getElementById('ping-avg');
+                    const pingMax = document.getElementById('ping-max');
+                    const pingLoss = document.getElementById('ping-loss');
+                    
+                    // Reset values and show loading state
+                    pingMin.textContent = 'Testing...';
+                    pingAvg.textContent = 'Testing...';
+                    pingMax.textContent = 'Testing...';
+                    pingLoss.textContent = 'Testing...';
+                    
+                    // Simulate ping test
+                    setTimeout(() => {
+                        // Generate random ping values for demonstration
+                        const min = Math.floor(Math.random() * 20) + 5;
+                        const avg = min + Math.floor(Math.random() * 15);
+                        const max = avg + Math.floor(Math.random() * 30);
+                        const loss = Math.random() < 0.8 ? 0 : Math.floor(Math.random() * 5);
+                        
+                        // Update UI with ping results
+                        pingMin.textContent = `${min} ms`;
+                        pingAvg.textContent = `${avg} ms`;
+                        pingMax.textContent = `${max} ms`;
+                        pingLoss.textContent = `${loss}%`;
+                    }, 1500);
+                });
+            }
+            
+            // Set current year in footer
+            document.getElementById('current-year').textContent = new Date().getFullYear();
+        });
+    </script>
+</body>
+</html>
